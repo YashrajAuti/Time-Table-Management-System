@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetable Configuration</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Internal CSS -->
+    <style>
+        :root {
+            --primary-bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --accent-color: #4e73df;
+            --accent-hover: #2e59d9;
+            --text-main: #333333;
+            --text-muted: #858796;
+            --border-color: #e3e6f0;
+            --danger-color: #e74a3b;
+            --input-bg: #ffffff;
+            --input-border: #ced4da;
+            --input-text: #495057;
+            --card-header-bg: #f8f9fc;
+            --navbar-bg: #ffffff;
+            --navbar-text: #212529;
+        }
+
+        html[data-theme="dark"] {
+            --primary-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --accent-color: #6c7ff0;
+            --accent-hover: #8a9ff5;
+            --text-main: #e4e4e7;
+            --text-muted: #a1a1a1;
+            --border-color: #2d3748;
+            --danger-color: #f56565;
+            --input-bg: #0f3460;
+            --input-border: #2d3748;
+            --input-text: #e4e4e7;
+            --card-header-bg: #0f3460;
+            --navbar-bg: #0f1419;
+            --navbar-text: #e4e4e7;
+        }
+
+
+        body {
+            background-color: var(--primary-bg);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-main);
+            padding: 40px 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+
+        .header-section h1 {
+            font-weight: 700;
+            color: #2c3e50;
+            letter-spacing: -0.5px;
+        }
+
+
+        .header-section p {
+            color: var(--text-muted);
+            font-size: 1.1em;
+        }
+
+
+        .config-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+
+        .config-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+
+        .card-header-custom {
+            background-color: var(--card-header-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 25px;
+            font-weight: 600;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+        .card-body-custom {
+            padding: 25px;
+        }
+
+
+        .form-label {
+            font-weight: 500;
+            font-size: 0.95em;
+            color: var(--input-text);
+        }
+
+
+        .form-control,
+        .form-select {
+            border-radius: 8px;
+            border: 1px solid var(--input-border);
+            padding: 10px 15px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out;
+            background-color: var(--input-bg);
+            color: var(--input-text);
+        }
+
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+            background-color: var(--input-bg);
+            color: var(--input-text);
+        }
+
+
+        .btn-generate {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 6px rgba(78, 115, 223, 0.2);
+            transition: all 0.2s;
+        }
+
+
+        .btn-generate:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(78, 115, 223, 0.3);
+            color: white;
+        }
+
+
+        .dynamic-field-btn {
+            color: var(--accent-color);
+            background: none;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9em;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .dynamic-field-btn:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+
+        .input-group-text {
+            background-color: var(--card-header-bg);
+            color: var(--text-muted);
+            border: 1px solid var(--input-border);
+        }
+
+        /* Dark theme toggle button */
+        .theme-toggle-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--card-header-bg);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        /* Navbar dark mode */
+        html[data-theme="dark"] .navbar {
+            background-color: var(--navbar-bg) !important;
+            border-bottom-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .navbar-toggler {
+            color: var(--text-main);
+            border-color: var(--border-color);
+        }
+
+        html[data-theme="dark"] .navbar-brand,
+        html[data-theme="dark"] .nav-link {
+            color: var(--text-main) !important;
+        }
+
+        html[data-theme="dark"] .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        html[data-theme="dark"] .btn-outline-danger {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        html[data-theme="dark"] .btn-outline-danger:hover {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        /* Smooth transition for theme switch */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 30px;">
+        <div class="container">
+            <span class="navbar-brand">
+                <i class="fas fa-calendar-check text-primary"></i> Timetable Generator
+            </span>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-muted">
+                    <i class="fas fa-user-circle"></i> {{ session.username }}
+                </span>
+                <button class="theme-toggle-btn" id="themeToggle" title="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="/logout" class="btn btn-sm btn-outline-danger">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header-section">
+            <h1><i class="fas fa-calendar-alt me-2 text-primary"></i> Timetable Generator</h1>
+            <p>Configure the parameters necessary to automatically generate an optimal class schedule.</p>
+        </div>
+
+
+        <!-- Ensure method is POST and action points to the new /generate backend route -->
+        <form action="/generate" method="POST" id="timetableConfigForm">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-6">
+
+                    <!-- Timing Configuration -->
+                    <div class="config-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-clock"></i> Daily Timing Configuration
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="startTime" class="form-label">College Start Time</label>
+                                    <!-- Added name attribute -->
+                                    <input type="time" name="start_time" class="form-control" id="startTime"
+                                        value="09:00" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="endTime" class="form-label">College End Time</label>
+                                    <!-- Added name attribute -->
+                                    <input type="time" name="end_time" class="form-control" id="endTime" value="16:00"
+                                        required>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="lectureDuration" class="form-label">Lecture Duration (mins)</label>
+                                    <!-- Added name attribute -->
+                                    <select class="form-select" name="lecture_duration" id="lectureDuration">
+                                        <option value="45">45 Minutes</option>
+                                        <option value="50">50 Minutes</option>
+                                        <option value="60" selected>60 Minutes (1 Hour)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="practicalDuration" class="form-label">Practical Duration (mins)</label>
+                                    <select class="form-select" name="practical_duration" id="practicalDuration">
+                                        <option value="60">60 Minutes (1 Hour)</option>
+                                        <option value="75">75 Minutes</option>
+                                        <option value="90" selected>90 Minutes (1.5 Hours)</option>
+                                        <option value="120">120 Minutes (2 Hours)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Customized Breaks Configuration -->
+                    <div class="config-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-mug-hot"></i> Customized Breaks
+                        </div>
+                        <div class="card-body-custom">
+                            <p class="text-muted small mb-3">Define arbitrary breaks. The engine will not schedule
+                                lectures overlapping these time ranges.</p>
+                            <div id="breaksList">
+                                <div class="d-flex gap-2 mb-2 break-item">
+                                    <input type="text" name="break_label[]" class="form-control"
+                                        placeholder="Label (e.g. Lunch)" value="Lunch Break">
+                                    <input type="time" name="break_start[]" class="form-control" value="13:00">
+                                    <input type="time" name="break_end[]" class="form-control" value="14:00">
+                                    <button class="btn btn-outline-danger" type="button"
+                                        onclick="this.parentElement.remove()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" class="dynamic-field-btn" onclick="addBreakField()">
+                                <i class="fas fa-plus-circle"></i> Add Another Break
+                            </button>
+                        </div>
+                    </div>
+
+
+                    <!-- Infrastructure Configuration -->
+                    <div class="config-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-building"></i> Infrastructure Details
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="numClassrooms" class="form-label">Available Classrooms</label>
+                                    <!-- Added name attribute -->
+                                    <input type="number" name="num_classrooms" class="form-control" id="numClassrooms"
+                                        min="1" placeholder="e.g., 10" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="numClasses" class="form-label">Number of Classes/Sections</label>
+                                    <input type="number" name="num_classes" class="form-control" id="numClasses" min="1"
+                                        value="2" placeholder="e.g., 2" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="numLabs" class="form-label">Available Laboratories</label>
+                                    <input type="number" name="num_labs" class="form-control" id="numLabs"
+                                        min="0" value="0" placeholder="e.g., 5">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Right Column -->
+                <div class="col-lg-6">
+
+
+                    <!-- Academic Configuration -->
+                    <div class="config-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-graduation-cap"></i> Curriculum & Faculty
+                        </div>
+                        <div class="card-body-custom">
+
+                            <div class="alert alert-warning small py-2">
+                                <i class="fas fa-exclamation-triangle"></i> For non-overlapping multi-class scheduling,
+                                you must define at least as many unique Faculty Members as the "Number of Classes".
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label for="numLectures" class="form-label">Total Number of Subjects/Lectures</label>
+                                <!-- Added name attribute -->
+                                <input type="number" name="num_lectures" class="form-control" id="numLectures" min="1"
+                                    placeholder="Enter total subjects to schedule" required>
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label for="freeLectures" class="form-label">Number of Free/Off Lectures (Per
+                                    Week)</label>
+                                <input type="number" name="free_lectures" class="form-control" id="freeLectures" min="0"
+                                    value="0" placeholder="Default is 0">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Faculty Members & Subject Hours</label>
+                                <p class="text-muted small mb-2">Specify faculty name, subject, theory hours, and practical hours required</p>
+                                <div id="facultyList">
+                                    <div class="row mb-2 faculty-item">
+                                        <div class="col-auto">
+                                            <span class="input-group-text"><i class="fas fa-chalkboard-teacher"></i></span>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="text" name="faculty_name[]" class="form-control"
+                                                placeholder="Faculty 1">
+                                        </div>
+                                        <div class="col-2">
+                                            <input type="text" name="faculty_subject[]" class="form-control"
+                                                placeholder="Subject">
+                                        </div>
+                                        <div class="col-2">
+                                            <input type="number" name="faculty_hours[]" class="form-control"
+                                                placeholder="Theory Hrs/Week" min="1" value="3">
+                                        </div>
+                                        <div class="col-2">
+                                            <input type="number" name="faculty_practical_hours[]" class="form-control"
+                                                placeholder="Practical Hrs/Week" min="0" value="1">
+                                        </div>
+                                        <div class="col-auto">
+                                            <button class="btn btn-outline-danger" type="button"
+                                                onclick="this.closest('.faculty-item').remove()">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 faculty-item">
+                                        <div class="col-auto">
+                                            <span class="input-group-text"><i class="fas fa-chalkboard-teacher"></i></span>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="text" name="faculty_name[]" class="form-control"
+                                                placeholder="Faculty 2">
+                                        </div>
+                                        <div class="col-2">
+                                            <input type="text" name="faculty_subject[]" class="form-control"
+                                                placeholder="Subject">
+                                        </div>
+                                        <div class="col-2">
+                                            <input type="number" name="faculty_hours[]" class="form-control"
+                                                placeholder="Theory Hrs/Week" min="1" value="3">
+                                        </div>
+                                        <div class="col-2">
+                                            <input type="number" name="faculty_practical_hours[]" class="form-control"
+                                                placeholder="Practical Hrs/Week" min="0" value="1">
+                                        </div>
+                                        <div class="col-auto">
+                                            <button class="btn btn-outline-danger" type="button"
+                                                onclick="this.closest('.faculty-item').remove()">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="dynamic-field-btn" onclick="addFacultyField()">
+                                    <i class="fas fa-plus-circle"></i> Add Another Faculty
+                                </button>
+                            </div>
+
+                            <div class="mb-3 mt-4">
+                                <label class="form-label">Working Days</label>
+                                <div class="d-flex flex-wrap gap-3 mt-2">
+                                    <div class="form-check">
+                                        <!-- Added name attribute -->
+                                        <input class="form-check-input" type="checkbox" name="working_days" value="Mon"
+                                            id="dayMon" checked>
+                                        <label class="form-check-label" for="dayMon">Mon</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="working_days" value="Tue"
+                                            id="dayTue" checked>
+                                        <label class="form-check-label" for="dayTue">Tue</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="working_days" value="Wed"
+                                            id="dayWed" checked>
+                                        <label class="form-check-label" for="dayWed">Wed</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="working_days" value="Thu"
+                                            id="dayThu" checked>
+                                        <label class="form-check-label" for="dayThu">Thu</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="working_days" value="Fri"
+                                            id="dayFri" checked>
+                                        <label class="form-check-label" for="dayFri">Fri</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="working_days" value="Sat"
+                                            id="daySat">
+                                        <label class="form-check-label" for="daySat">Sat</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-generate btn-lg px-5">
+                    <i class="fas fa-magic me-2"></i> Generate Multi-Class Timetable
+                </button>
+            </div>
+        </form>
+    </div>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- Script for Dynamic Fields -->
+    <script>
+        // Dark Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+
+        // Initialize theme from localStorage or system preference
+        const initializeTheme = () => {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme) {
+                htmlElement.setAttribute('data-theme', savedTheme);
+            } else if (prefersDark) {
+                htmlElement.setAttribute('data-theme', 'dark');
+            }
+
+            updateThemeIcon();
+        };
+
+        // Update theme icon
+        const updateThemeIcon = () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                themeToggle.title = 'Switch to light mode';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                themeToggle.title = 'Switch to dark mode';
+            }
+        };
+
+        // Toggle theme
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon();
+        });
+
+        // Initialize theme on load
+        initializeTheme();
+
+        function addFacultyField() {
+            const facultyList = document.getElementById('facultyList');
+            const newField = document.createElement('div');
+            newField.className = 'row mb-2 faculty-item';
+            newField.innerHTML = `
+            <div class="col-auto">
+                <span class="input-group-text"><i class="fas fa-chalkboard-teacher"></i></span>
+            </div>
+            <div class="col-3">
+                <input type="text" name="faculty_name[]" class="form-control" placeholder="Faculty Name">
+            </div>
+            <div class="col-2">
+                <input type="text" name="faculty_subject[]" class="form-control" placeholder="Subject">
+            </div>
+            <div class="col-2">
+                <input type="number" name="faculty_hours[]" class="form-control" placeholder="Theory Hrs/Week" min="1" value="3">
+            </div>
+            <div class="col-2">
+                <input type="number" name="faculty_practical_hours[]" class="form-control" placeholder="Practical Hrs/Week" min="0" value="1">
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-danger btn-sm" type="button" onclick="this.closest('.faculty-item').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+            facultyList.appendChild(newField);
+        }
+
+
+        function addBreakField() {
+            const breaksList = document.getElementById('breaksList');
+            const newField = document.createElement('div');
+            newField.className = 'd-flex gap-2 mb-2 break-item';
+            newField.innerHTML = `
+            <input type="text" name="break_label[]" class="form-control" placeholder="Label (e.g. Tea Break)">
+            <input type="time" name="break_start[]" class="form-control">
+            <input type="time" name="break_end[]" class="form-control">
+            <button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+            breaksList.appendChild(newField);
+        }
+    </script>
+
+
+</body>
+
+</html>
