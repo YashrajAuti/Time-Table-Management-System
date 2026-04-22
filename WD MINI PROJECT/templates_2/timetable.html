@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Generated Timetable</title>
+
+    <!-- Bootstrap + Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .header {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .header h2 {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .table thead {
+            background-color: #4e73df;
+            color: white;
+        }
+
+        .slot-break {
+            background-color: #ffeeba;
+            font-weight: 600;
+        }
+
+        .btn-group-custom {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div class="container">
+            <span class="navbar-brand">
+                <i class="fas fa-calendar-check text-primary"></i> Timetable Generator
+            </span>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-muted">
+                    <i class="fas fa-user-circle"></i> {{ session.username }}
+                </span>
+                <a href="/logout" class="btn btn-sm btn-outline-danger">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <div class="header">
+            <h2><i class="fas fa-calendar-check text-primary"></i> Generated Timetable</h2>
+            <p class="text-muted">Automatically generated multi-class schedule</p>
+        </div>
+
+        <!-- Loop through each class -->
+        {% for class_id, days in schedules.items() %}
+
+        <div class="table-card">
+            <h5 class="mb-3 text-primary"><i class="fas fa-users"></i> {{ class_id }}</h5>
+
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            {% for day in config.working_days %}
+                            <th>{{ day }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for i in range(time_slots|length) %}
+                        <tr>
+                            <td><strong>{{ time_slots[i].time }}</strong></td>
+
+                            {% for day in config.working_days %}
+                            {% set slot = schedules[class_id][day][i] %}
+
+                            {% if time_slots[i].is_break %}
+                            <td class="slot-break">{{ time_slots[i].label }}</td>
+                            {% else %}
+                            <td>
+                                {{ slot.subject }}<br>
+                                <small class="text-muted">{{ slot.faculty }}</small><br>
+                                <span class="badge bg-secondary">{{ slot.room }}</span>
+                            </td>
+                            {% endif %}
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+        {% endfor %}
+
+        <!-- Buttons -->
+        <div class="btn-group-custom">
+            <button onclick="downloadPDF()" class="btn btn-success me-2">
+                <i class="fas fa-file-pdf"></i> Download as PDF
+            </button>
+            <a href="/" class="btn btn-primary me-2">
+                <i class="fas fa-redo"></i> Generate Again
+            </a>
+        </div>
+
+    </div>
+
+    <!-- html2pdf Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        function downloadPDF() {
+            // Get the container with the timetables
+            const element = document.querySelector('.container');
+            
+            // PDF options
+            const options = {
+                margin: 10,
+                filename: 'Timetable_' + new Date().toISOString().split('T')[0] + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+            };
+
+            // Generate and download PDF
+            html2pdf().set(options).from(element).save();
+        }
+    </script>
+
+</body>
+
+</html>
