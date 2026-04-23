@@ -30,6 +30,26 @@
             --text-secondary: rgba(255, 255, 255, 0.65);
             --error: #f87171;
             --success: #34d399;
+            --bg-primary: #0f0c29;
+            --bg-secondary: #302b63;
+            --text-light: #ffffff;
+        }
+
+        html[data-theme="light"] {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --accent: #06b6d4;
+            --surface: rgba(255, 255, 255, 0.95);
+            --surface-hover: rgba(200, 200, 220, 0.3);
+            --border: rgba(100, 100, 140, 0.2);
+            --text-primary: #1f2937;
+            --text-secondary: rgba(50, 50, 60, 0.7);
+            --error: #dc2626;
+            --success: #059669;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --text-light: #1f2937;
         }
 
         html, body {
@@ -42,17 +62,23 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: #0f0c29;
+            background: var(--bg-primary);
             overflow: hidden;
             position: relative;
+            transition: background-color 0.3s ease;
         }
 
         /* ── Animated gradient background ── */
         .bg-gradient {
             position: fixed;
             inset: 0;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-secondary) 100%);
             z-index: 0;
+            transition: background 0.3s ease;
+        }
+
+        html[data-theme="light"] .bg-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 50%, #e5e7eb 100%);
         }
 
         .orb {
@@ -62,6 +88,7 @@
             opacity: 0.45;
             animation: float 8s ease-in-out infinite;
             z-index: 0;
+            transition: opacity 0.3s ease;
         }
 
         .orb-1 {
@@ -83,6 +110,10 @@
             background: radial-gradient(circle, #a855f7, #7c3aed);
             top: 50%; left: 60%;
             animation-delay: -2s;
+        }
+
+        html[data-theme="light"] .orb {
+            opacity: 0.15;
         }
 
         @keyframes float {
@@ -246,6 +277,32 @@
             color: rgba(255, 255, 255, 0.3);
         }
 
+        /* Light mode input styles */
+        html[data-theme="light"] .input-wrap input {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            color: #1f2937;
+        }
+
+        html[data-theme="light"] .input-wrap input::placeholder {
+            color: rgba(0, 0, 0, 0.3);
+        }
+
+        html[data-theme="light"] .input-wrap input:focus {
+            background: rgba(0, 0, 0, 0.08);
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        html[data-theme="light"] .input-wrap .icon {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        html[data-theme="light"] .input-wrap input:focus + .icon,
+        html[data-theme="light"] .input-wrap:has(input:focus) .icon {
+            color: #6366f1;
+        }
+
         .input-wrap input:focus {
             background: rgba(255, 255, 255, 0.11);
             border-color: var(--primary-light);
@@ -273,6 +330,14 @@
         }
 
         .toggle-pw:hover { color: rgba(255, 255, 255, 0.8); }
+
+        html[data-theme="light"] .toggle-pw {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        html[data-theme="light"] .toggle-pw:hover {
+            color: rgba(0, 0, 0, 0.8);
+        }
 
         /* ── Submit button ── */
         .btn-login {
@@ -365,14 +430,91 @@
             white-space: nowrap;
         }
 
-        /* ── Responsive ── */
-        @media (max-width: 480px) {
+        /* Light mode card styling */
+        html[data-theme="light"] .login-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        html[data-theme="light"] .brand h1 {
+            color: #1f2937;
+        }
+
+        html[data-theme="light"] .brand p {
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        html[data-theme="light"] label {
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        html[data-theme="light"] .hint {
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        html[data-theme="light"] .hint code {
+            background: rgba(0, 0, 0, 0.05);
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        html[data-theme="light"] .divider span {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        html[data-theme="light"] .divider p {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        html[data-theme="light"] .alert-error {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            color: #991b1b;
+        }
+
+        /* Theme toggle button */
+        .theme-toggle-login {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            padding: 10px 14px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .theme-toggle-login:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        html[data-theme="light"] .theme-toggle-login {
+            background: rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        html[data-theme="light"] .theme-toggle-login:hover {
+            background: rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            color: #1f2937;
+        }
             .login-card { padding: 36px 24px; }
         }
     </style>
 </head>
 
 <body>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle-login" id="themeToggleLogin" title="Toggle dark/light mode"></button>
 
     <!-- Background -->
     <div class="bg-gradient"></div>
@@ -495,6 +637,39 @@
             btn.classList.add('loading');
             btn.disabled = true;
         });
+
+        /* ── Theme Toggle ── */
+        const htmlElement = document.documentElement;
+        const themeToggle = document.getElementById('themeToggleLogin');
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            htmlElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon();
+        }
+
+        const updateThemeIcon = () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                themeToggle.title = 'Switch to light mode';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                themeToggle.title = 'Switch to dark mode';
+            }
+        };
+
+        // Toggle theme
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon();
+        });
+
+        // Initialize theme on load
+        initializeTheme();
     </script>
 
 </body>

@@ -10,9 +10,35 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <style>
+        :root {
+            --primary-bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --accent-color: #4e73df;
+            --accent-hover: #2e59d9;
+            --text-main: #333333;
+            --text-muted: #858796;
+            --border-color: #e3e6f0;
+            --table-header-bg: #4e73df;
+            --table-header-text: #ffffff;
+        }
+
+        html[data-theme="dark"] {
+            --primary-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --accent-color: #6c7ff0;
+            --accent-hover: #8a9ff5;
+            --text-main: #e4e4e7;
+            --text-muted: #a1a1a1;
+            --border-color: #2d3748;
+            --table-header-bg: #0f3460;
+            --table-header-text: #e4e4e7;
+        }
+
         body {
-            background-color: #f4f7f6;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
             font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .header {
@@ -22,20 +48,47 @@
 
         .header h2 {
             font-weight: 700;
-            color: #2c3e50;
+            color: var(--text-main);
+        }
+
+        .header p {
+            color: var(--text-muted);
         }
 
         .table-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
             padding: 20px;
             margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .table-card h5 {
+            color: var(--accent-color);
+        }
+
+        .table {
+            color: var(--text-main);
         }
 
         .table thead {
-            background-color: #4e73df;
-            color: white;
+            background-color: var(--table-header-bg);
+            color: var(--table-header-text);
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table tbody td {
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        .table small {
+            color: var(--text-muted);
         }
 
         .slot-break {
@@ -43,9 +96,56 @@
             font-weight: 600;
         }
 
+        html[data-theme="dark"] .slot-break {
+            background-color: #d97706;
+            color: #ffffff;
+        }
+
         .btn-group-custom {
             text-align: center;
             margin-top: 20px;
+        }
+
+        .btn {
+            transition: all 0.3s ease;
+        }
+
+        /* Navbar dark mode */
+        .navbar {
+            background-color: var(--card-bg) !important;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .navbar-brand {
+            color: var(--text-main) !important;
+        }
+
+        .navbar .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* Theme toggle button */
+        .theme-toggle-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: rgba(78, 115, 223, 0.1);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        /* Smooth transition for theme switch */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
     </style>
 </head>
@@ -62,6 +162,7 @@
                 <span class="text-muted">
                     <i class="fas fa-user-circle"></i> {{ session.username }}
                 </span>
+                <button class="theme-toggle-btn" id="themeToggle" title="Toggle dark mode"></button>
                 <a href="/logout" class="btn btn-sm btn-outline-danger">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
@@ -140,7 +241,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
-        function doonly the printable content (without navbar and buttons)
+        function downloadPDF() {
+            // Get only the printable content (without navbar and buttons)
             const element = document.getElementById('printable-content');
             
             if (!element) {
@@ -165,9 +267,41 @@
             html2pdf().set(options).from(clonedElement).save().catch(function(error) {
                 console.error('PDF generation error:', error);
                 alert('Error generating PDF. Please try again.');
-            }
-            html2pdf().set(options).from(element).save();
+            });
         }
+
+        // ── Theme Toggle ──
+        const htmlElement = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            htmlElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon();
+        }
+
+        const updateThemeIcon = () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                themeToggle.title = 'Switch to light mode';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                themeToggle.title = 'Switch to dark mode';
+            }
+        };
+
+        // Toggle theme
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon();
+        });
+
+        // Initialize theme on load
+        initializeTheme();
     </script>
 
 </body>
