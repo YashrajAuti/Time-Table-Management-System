@@ -71,13 +71,14 @@
 
     <div class="container">
 
-        <div class="header">
-            <h2><i class="fas fa-calendar-check text-primary"></i> Generated Timetable</h2>
-            <p class="text-muted">Automatically generated multi-class schedule</p>
-        </div>
+        <div id="printable-content">
+            <div class="header">
+                <h2><i class="fas fa-calendar-check text-primary"></i> Generated Timetable</h2>
+                <p class="text-muted">Automatically generated multi-class schedule</p>
+            </div>
 
-        <!-- Loop through each class -->
-        {% for class_id, days in schedules.items() %}
+            <!-- Loop through each class -->
+            {% for class_id, days in schedules.items() %}
 
         <div class="table-card">
             <h5 class="mb-3 text-primary"><i class="fas fa-users"></i> {{ class_id }}</h5>
@@ -121,6 +122,7 @@
         </div>
 
         {% endfor %}
+        </div>
 
         <!-- Buttons -->
         <div class="btn-group-custom">
@@ -138,20 +140,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
-        function downloadPDF() {
-            // Get the container with the timetables
-            const element = document.querySelector('.container');
+        function doonly the printable content (without navbar and buttons)
+            const element = document.getElementById('printable-content');
+            
+            if (!element) {
+                alert('Error: Could not find timetable content to export');
+                return;
+            }
+            
+            // Clone the element to avoid modifying the original
+            const clonedElement = element.cloneNode(true);
             
             // PDF options
             const options = {
-                margin: 10,
+                margin: [5, 5, 5, 5],
                 filename: 'Timetable_' + new Date().toISOString().split('T')[0] + '.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+                image: { type: 'png', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, allowTaint: true },
+                jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
             // Generate and download PDF
+            html2pdf().set(options).from(clonedElement).save().catch(function(error) {
+                console.error('PDF generation error:', error);
+                alert('Error generating PDF. Please try again.');
+            }
             html2pdf().set(options).from(element).save();
         }
     </script>
