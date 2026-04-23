@@ -253,21 +253,92 @@
             // Clone the element to avoid modifying the original
             const clonedElement = element.cloneNode(true);
             
-            // PDF options
+            // Apply explicit inline styles for PDF rendering (html2pdf doesn't handle CSS vars well)
+            const headerDiv = clonedElement.querySelector('.header');
+            if (headerDiv) {
+                headerDiv.style.cssText = 'text-align: center; margin: 30px 0;';
+                const h2 = headerDiv.querySelector('h2');
+                const p = headerDiv.querySelector('p');
+                if (h2) h2.style.cssText = 'font-weight: 700; color: #333333; font-size: 28px; margin: 0;';
+                if (p) p.style.cssText = 'color: #858796; font-size: 14px; margin: 8px 0 0 0;';
+            }
+            
+            // Style all table cards
+            clonedElement.querySelectorAll('.table-card').forEach(card => {
+                card.style.cssText = 'background: white; border-radius: 12px; padding: 20px; margin-bottom: 30px; border: 1px solid #e3e6f0; page-break-inside: avoid;';
+                
+                const h5 = card.querySelector('h5');
+                if (h5) {
+                    h5.style.cssText = 'color: #4e73df; margin: 0 0 15px 0; font-weight: 600; font-size: 18px;';
+                }
+            });
+            
+            // Style all tables
+            clonedElement.querySelectorAll('table').forEach(table => {
+                table.style.cssText = 'width: 100%; color: #333333; border-collapse: collapse; font-size: 13px;';
+            });
+            
+            // Style table headers
+            clonedElement.querySelectorAll('thead').forEach(thead => {
+                thead.querySelectorAll('th').forEach(th => {
+                    th.style.cssText = 'background-color: #4e73df; color: white; padding: 10px; border: 1px solid #4e73df; text-align: center; font-weight: 600;';
+                });
+            });
+            
+            // Style table body
+            clonedElement.querySelectorAll('tbody').forEach(tbody => {
+                tbody.querySelectorAll('tr').forEach(tr => {
+                    tr.querySelectorAll('td').forEach(td => {
+                        td.style.cssText = 'color: #333333; padding: 8px; border: 1px solid #e3e6f0; text-align: center; vertical-align: middle;';
+                        
+                        // Style breaks specially
+                        if (td.classList.contains('slot-break')) {
+                            td.style.cssText = 'background-color: #ffeeba; color: #333333; font-weight: 600; padding: 8px; border: 1px solid #ffc107; text-align: center; vertical-align: middle;';
+                        }
+                    });
+                });
+            });
+            
+            // Style small text (faculty names)
+            clonedElement.querySelectorAll('small').forEach(small => {
+                small.style.cssText = 'color: #858796; display: block; font-size: 11px; margin: 2px 0;';
+            });
+            
+            // Style badges (room numbers)
+            clonedElement.querySelectorAll('.badge').forEach(badge => {
+                badge.style.cssText = 'background-color: #6c757d; color: white; padding: 3px 6px; border-radius: 3px; font-size: 11px; display: inline-block;';
+            });
+            
+            // PDF options with better settings
             const options = {
-                margin: [5, 5, 5, 5],
+                margin: 10,
                 filename: 'Timetable_' + new Date().toISOString().split('T')[0] + '.pdf',
                 image: { type: 'png', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, allowTaint: true },
-                jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' },
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true, 
+                    allowTaint: true, 
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    windowHeight: clonedElement.scrollHeight + 100
+                },
+                jsPDF: { 
+                    orientation: 'landscape', 
+                    unit: 'mm', 
+                    format: 'a4'
+                },
                 pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
             // Generate and download PDF
-            html2pdf().set(options).from(clonedElement).save().catch(function(error) {
-                console.error('PDF generation error:', error);
-                alert('Error generating PDF. Please try again.');
-            });
+            html2pdf()
+                .set(options)
+                .from(clonedElement)
+                .save()
+                .catch(function(error) {
+                    console.error('PDF generation error:', error);
+                    alert('Error generating PDF. Please try again. Error: ' + error.message);
+                });
         }
 
         // ── Theme Toggle ──
